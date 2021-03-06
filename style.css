@@ -37,6 +37,7 @@ html, body {
 .slide img {
   max-width: 100%;
   max-height: 60%;
+  transition: transform 0.3s ease-in-out; /* smooth slide transition */
 }
 
 .slide h2 {
@@ -53,6 +54,11 @@ text-decoration: none;
 padding: 1rem 1.5rem;
 color: #ffffff;
 background-color: #5c5554;
+}
+
+.btn:hover {
+  color: #222;
+  background-color: #41b33b
 }
 
 .grabbing {

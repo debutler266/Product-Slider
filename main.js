@@ -29,3 +29,79 @@ slide.addEventListener('mouseleave', touchEnd)
 slide.addEventListener('mousemove', touchMove)
 
 })
+//stop menu from opening in console
+window.oncontextmenu = function(event) {
+  event.preventDefault()
+  event.stopPropagation()
+  return false
+}
+
+//functions for events called (above)
+//passing index through a fuction, so we must return a function using this method
+
+function touchStart(index) {
+  return function(event) {
+    //gives exact browser position on the X axis
+    currentIndex = index
+    startPos = getPositionX(event)
+    isDragging = true
+
+    //(request animation frame) csstricks.com-using-request animation frame
+    //tells browswer we want to perform a specific animation, & request a call to a specific animation before the next animation is ran
+    //we want to move left-right so we are targetting the X-axis
+    animationID = requestAnimationFrame(animation)
+    slider.classList.add('grabbing')
+  }
+}
+
+function touchEnd() {
+  isDragging = false
+  cancelAnimationFrame(animationID)
+
+  //set slide in place when moved or go to next slide when moving -100/to the right
+  const movedBy = currentTranslate - prevTranslate
+
+  if(movedBy < -100 && currentIndex < slides.length - 1)
+  currentIndex += 1
+
+  //make sure it wont go to next slide if the current slide is the 1st slide, there is no slide before it
+  if(movedBy > 100 && currentIndex > 0)
+  currentIndex -= 1
+
+  setPositionByIndex()
+
+  slider.classList.remove('grabbing')
+}
+
+function touchMove(event) {
+  if (isDragging) {
+    //set currentTranslate value because setSliderPosition depends on it
+  const currentPosition = getPositionX(event)
+  currentTranslate = prevTranslate + currentPosition -
+  startPos
+  }
+}
+
+function getPositionX(event) {
+  return event.type.includes('mouse')
+  ? event.pageX
+  : event.touches[0].clientX
+}
+
+//animation function we passed from requestAnimationFrame
+function animation() {
+  setSliderPosition()
+  if(isDragging) requestAnimationFrame(animation)
+}
+
+function setSliderPosition() {
+  slider.style.transform = `translateX(${currentTranslate}px)`
+}
+
+//set index postion of slides
+//shift entire inner width of the window regardless of screen-size, & move to the next slide if moved to the right
+function setPositionByIndex() {
+  currentTranslate = currentIndex * -window.innerWidth
+  prevTranslate = currentTranslate
+  setSliderPosition()
+}
